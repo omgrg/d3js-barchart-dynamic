@@ -74,7 +74,7 @@ function update(data) {
     }));
 
     yScale.domain([0, d3.max(data, function (d) {
-        console.log(d);
+
             return d[value];
     })]);
 

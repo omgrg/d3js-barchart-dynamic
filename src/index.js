@@ -88,7 +88,7 @@ function update(data) {
     let rects = g.selectAll('rect')
         .data(data);
 
-    rects.exit().attr('fill','red').remove();
+    rects.exit().remove();
 
 
     rects.attr('y', function (d) {

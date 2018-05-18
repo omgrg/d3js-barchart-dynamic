@@ -14,12 +14,12 @@ let flag = true;
 
 let svg = d3.select('#bar-chart')
     .append('svg')
-    .attr('width', width + margin.left + margin.right)
-    .attr('height', height + margin.top + margin.bottom);
+        .attr('width', width + margin.left + margin.right)
+        .attr('height', height + margin.top + margin.bottom);
 
 let g = svg
     .append('g')
-    .attr('transform', "translate(" + margin.left + "," + margin.top + ")");
+        .attr('transform', "translate(" + margin.left + "," + margin.top + ")");
 
 // X Label
 g.append("text")
@@ -39,13 +39,11 @@ let yLabel = g.append("text")
     .text("Revenue");
 
 
-let xScale = d3.scaleBand().range([0, width]).padding(0.2);
-let yScale = d3.scaleLinear().range([height, 0]);
+let x = d3.scaleBand().range([0, width]).padding(0.2);
+let y = d3.scaleLinear().range([height, 0]);
 
-let xAxisGroup =  g.append('g').attr("transform", "translate(0," + height + ")");
-let yAxisGroup =  g.append('g');
-
-
+let xAxisGroup = g.append('g').attr("transform", "translate(0," + height + ")");
+let yAxisGroup = g.append('g');
 
 
 d3.json('data/revenues.json').then(function (data) {
@@ -67,53 +65,54 @@ d3.json('data/revenues.json').then(function (data) {
 
 function update(data) {
 
-   let value = flag ? "revenue" : "profit";
+    let value = flag ? "revenue" : "profit";
 
-    xScale.domain(data.map(function (d) {
+    x.domain(data.map(function (d) {
         return d.month;
     }));
 
-    yScale.domain([0, d3.max(data, function (d) {
+    y.domain([0, d3.max(data, function (d) {
 
-            return d[value];
+        return d[value];
     })]);
 
-    let xAxisCall = d3.axisBottom(xScale);
+    let xAxisCall = d3.axisBottom(x);
     xAxisGroup.call(xAxisCall);
 
-    let yAxisCall = d3.axisLeft(yScale).tickFormat(function (d) {
+    let yAxisCall = d3.axisLeft(y).tickFormat(function (d) {
         return "$" + d;
     });
     yAxisGroup.call(yAxisCall);
 
 
-
     let rects = g.selectAll('rect')
         .data(data);
 
-        rects.exit().remove();
+    rects.exit().attr('fill','red').remove();
 
-       rects.attr('y',function(d){
-            return yScale(d[value]);
-        }).attr('x', function(d){
-            return xScale(d.month);
-        }).attr('width', xScale.bandwidth)
-            .attr('height', function (d) {
-                return height - yScale(d[value])
-            });
 
-        rects.enter()
+    rects.attr('y', function (d) {
+        return y(d[value]);
+    }).attr('x', function (d) {
+        return x(d.month);
+    }).attr('width', x.bandwidth)
+        .attr('height', function (d) {
+            return height - y(d[value])
+        });
+
+
+    rects.enter()
         .append('rect')
         .attr('fill', 'grey')
-        .attr('width', xScale.bandwidth)
+        .attr('width', x.bandwidth)
         .attr('height', function (d) {
-            return height - yScale(d[value])
+            return height - y(d[value])
         })
         .attr('x', function (d) {
-            return xScale(d.month)
+            return x(d.month)
         })
         .attr('y', function (d) {
-            return yScale(d[value])
+            return y(d[value])
         });
 
     let label = flag ? "Revenue" : "Profit";

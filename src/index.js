@@ -57,11 +57,11 @@ d3.json('data/revenues.json').then(function (data) {
 
 
     d3.interval(function () {
-      let newData = flag ? data : data.slice(2);
+      let newData = flag ? data : data.slice(1);
 
         update(newData);
         flag = !flag;
-    }, 60000);
+    }, 1000);
 
     update(data);
 
